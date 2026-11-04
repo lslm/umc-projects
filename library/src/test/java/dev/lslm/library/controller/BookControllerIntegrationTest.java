@@ -44,8 +44,17 @@ class BookControllerIntegrationTest {
 
     @BeforeEach
     void configurarCliente() {
+        // Cria uma biblioteca (tenant) e a informa em todas as requisicoes via X-Biblioteca-Id
+        RestClient semTenant = RestClient.builder().baseUrl("http://localhost:" + port).build();
+        Map<String, Object> biblioteca = semTenant.post().uri("/api/v1/bibliotecas")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Map.of("nome", "Biblioteca Teste " + System.nanoTime()))
+                .retrieve()
+                .body(new ParameterizedTypeReference<>() {});
+
         client = RestClient.builder()
                 .baseUrl("http://localhost:" + port)
+                .defaultHeader("X-Biblioteca-Id", String.valueOf(biblioteca.get("id")))
                 // Nao lanca excecao em 4xx/5xx: alguns testes esperam 400 ou 404
                 .defaultStatusHandler(status -> true, (req, res) -> {})
                 .build();

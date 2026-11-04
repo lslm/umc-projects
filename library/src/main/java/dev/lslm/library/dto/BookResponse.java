@@ -15,7 +15,11 @@ public record BookResponse(
         Integer edition,
         LocalDate publishedAt,
         String language,
-        Integer pages
+        Integer pages,
+        UUID authorId,
+        UUID publisherId,
+        UUID categoryId,
+        boolean archived
 ) {
 
     public static BookResponse from(Book book) {
@@ -29,7 +33,11 @@ public record BookResponse(
                 book.getEdition(),
                 book.getPublishedAt(),
                 book.getLanguage(),
-                book.getPages()
+                book.getPages(),
+                book.getAuthorId(),
+                book.getPublisherId(),
+                book.getCategoryId(),
+                book.isArchived()
         );
     }
 }

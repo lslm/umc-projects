@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
@@ -30,8 +31,8 @@ public class BookController {
     }
 
     @GetMapping
-    public List<BookResponse> listar() {
-        return bookService.findAll().stream()
+    public List<BookResponse> listar(@RequestParam(defaultValue = "false") boolean incluirArquivados) {
+        return bookService.findAll(incluirArquivados).stream()
                 .map(BookResponse::from)
                 .collect(Collectors.toList());
     }
@@ -52,6 +53,16 @@ public class BookController {
     public BookResponse atualizar(@PathVariable UUID id, @RequestBody BookRequest request) {
         Book book = bookService.update(id, request);
         return BookResponse.from(book);
+    }
+
+    @PostMapping("/{id}/arquivamento")
+    public BookResponse arquivar(@PathVariable UUID id) {
+        return BookResponse.from(bookService.arquivar(id, true));
+    }
+
+    @PostMapping("/{id}/desarquivamento")
+    public BookResponse desarquivar(@PathVariable UUID id) {
+        return BookResponse.from(bookService.arquivar(id, false));
     }
 
     @DeleteMapping("/{id}")
